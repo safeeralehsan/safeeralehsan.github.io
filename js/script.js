@@ -1,6 +1,7 @@
 //Setting Elements
 buttons = document.querySelectorAll('.addtoCart');
 shopCart = document.getElementById('shoppingCart');
+clearButton = document.getElementById('clearCart');
 
 //Setting Up Local Storage
 class Store {
@@ -23,21 +24,29 @@ class Store {
     static removeItems(item)  {
         let items = Store.getItems();
         let delID = item.id;
-        let index = parseInt(delID.substr(delID.length-1));
-        items.splice(index, 1);
-        localStorage.setItem('items', JSON.stringify(items));  
-
-        let remainingCart = document.getElementById('shoppingCart');
-        items.forEach((item, index) => {
-            remainingCart.children[index].children[2].firstChild.id = `delButton${index}`;
-        });
+        if(items.length > 1){
+            let pos = parseInt(delID.substr(delID.length-1));
+            items.splice(pos, 1);
+            localStorage.setItem('items', JSON.stringify(items));  
+            let remainingCart = document.getElementById('shoppingCart');
+            items.forEach((item, index) => {
+                remainingCart.children[index].children[2].firstChild.id = `delButton${index}`;
+            });
+        } else {
+            localStorage.clear();
+        }
+        
     }
 
     static loadItems () {
         let items = Store.getItems();
-        items.forEach((item) => {
-            UI.addCart(item);
+        items.forEach((item, index) => {
+            UI.loadCart(item, index);
         });
+    }
+
+    static clearCartStore() {
+        localStorage.clear();
     }
 }
 
@@ -58,6 +67,21 @@ class UI {
     static removeFromCart(item){
         item.parentElement.parentElement.remove();
     }
+
+    static loadCart(item, index){
+        let cart = document.getElementById('shoppingCart');
+        let cartItem = document.createElement('tr');
+        cartItem.innerHTML = `
+                <td>${item.name}</td>
+                <td>${item.price}</td>
+                <td><button style="" id="delButton${index}">Del</td>
+        `;
+        cart.appendChild(cartItem)
+    }
+
+    static clearCartUI(){
+        shopCart.innerHTML = '';
+    }
 }
 
 //Item Class
@@ -73,7 +97,9 @@ buttons.forEach(button => {
     button.addEventListener('click', addtoCart);
 })
 shopCart.addEventListener('click', removeItem);
-document.addEventListener('DOMContentLoaded', Store.loadItems)
+document.addEventListener('DOMContentLoaded', Store.loadItems);
+clearButton.addEventListener('click', clearCart);
+
 
 
 //Setting up Functions
@@ -90,4 +116,9 @@ function removeItem(e){
         UI.removeFromCart(e.target);
         Store.removeItems(e.target);
     }
+}
+
+function clearCart(e){
+    UI.clearCartUI();
+    Store.clearCartStore();
 }
