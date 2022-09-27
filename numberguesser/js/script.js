@@ -25,28 +25,26 @@ function getRandomInt(max) {
 function guessCheck(e){
     if (e.key === "Enter"){
         if(guessInput.value){
-            if(numGuess === 0){
-                guessFeedback.innerHTML = 'You are out of guesses<br>Reset to play again';
+            let input = parseInt(guessInput.value);
+            if(input<1 || input>10){
+                guessFeedback.innerHTML = 'Guess needs to be between 1 and 10'
+            } else if (input<randomInt){
+                guessFeedback.innerHTML = 'Try higher';
+                numGuess -=1;
+                guessCounter.innerHTML = `${numGuess}`;
+            } else if (input>randomInt) {
+                guessFeedback.innerHTML = 'Try lower';
+                numGuess -=1;
+                guessCounter.innerHTML = `${numGuess}`;
             } else {
-                let input = parseInt(guessInput.value);
-                if(input<1 || input>10){
-                    guessFeedback.innerHTML = 'Guess needs to be between 1 and 10'
-                } else if (input<randomInt){
-                    guessFeedback.innerHTML = 'Try higher';
-                    numGuess -=1;
-                    guessCounter.innerHTML = `${numGuess}`;
-                } else if (input>randomInt) {
-                    guessFeedback.innerHTML = 'Try lower';
-                    numGuess -=1;
-                    guessCounter.innerHTML = `${numGuess}`;
-                } else {
-                    guessFeedback.innerHTML = 'You guessed right!';
-                    tryAgain.setAttribute('style', 'display:on; width:30%; margin: 0% 35% 0% 35%;')
-                }
-                if (numGuess==0) {
-                    guessFeedback.innerHTML = `You couldn't guess the number :(<br> It was ${randomInt}<br>Reset to play again`;
-                    tryAgain.setAttribute('style', 'display:on; width:30%; margin: 0% 35% 0% 35%;')
-                }
+                guessFeedback.innerHTML = 'You guessed right!';
+                guessInput.disabled = true;
+                tryAgain.setAttribute('style', 'display:on; width:30%; margin: 0% 35% 0% 35%;')
+            }
+            if (numGuess==0) {
+                guessInput.disabled = true;
+                guessFeedback.innerHTML = `You couldn't guess the number :(<br> It was ${randomInt}<br>Reset to play again`;
+                tryAgain.setAttribute('style', 'display:on; width:30%; margin: 0% 35% 0% 35%;')
             }
         }
     }
